@@ -7,6 +7,7 @@ using System.Reflection;
 using NLayer.Service.Mapping;
 using FluentValidation.AspNetCore;
 using NLayer.Service.Validations;
+using NLayer.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,16 +23,18 @@ builder.Services.AddDbContext<AppDbContext>(x =>
     });
 });
 
-
+builder.Services.AddScoped(typeof(NotFoundFilter<>));
 builder.Host.UseServiceProviderFactory
     (new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder => ContainerBuilder.RegisterModule(new RepoServiceModule()));
 var app = builder.Build();
 
+
+app.UseExceptionHandler("/Home/Error");
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+   
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
